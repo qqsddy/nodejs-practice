@@ -1,8 +1,4 @@
 # nodejs-practice
-<<<<<<< HEAD
-practice on node.js
-try upload test
-=======
 使用npm建立專案套件管理檔案package.json：
 § > npm init -y
 § 從github或bitbucket 網站clone 下來的專案，可以下式安裝package.json裡記錄的
@@ -29,4 +25,3 @@ nodemon會監看專案裡的檔案，有任何檔案變更，會重新啟動。
 § > npm install --save express
 § > npm i express
 § 查看package.json內容
->>>>>>> fcfe09ead2494a7a1ae9bd0fd74efdfd4c3cb4fb
