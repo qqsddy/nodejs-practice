@@ -18,8 +18,8 @@ app.use((req, res, next)=>{
 app.use(express.static('public'));
 
 app.get('/', (req, res) => {
-    res.render('home', {name: 'anita'});
     console.log(process.env.DB_HOST)
+    res.render('home', {name: 'anita'});
 });
 
 // crud products

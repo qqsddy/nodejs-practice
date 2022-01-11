@@ -1,5 +1,6 @@
 <%- include('./parts/header')  %> 
     <%- include('./parts/navbar') %>
+      
     <div class="container">
         <button class="btn btn-dark mt-4">Add</button>
         <table class="table mt-4 p-4">
@@ -16,19 +17,26 @@
                 </tr>
             </thead>
             <tbody>
+                <% for ( let product of products ) {%>
                 <tr>
-                    <th scope="row">1</th>
-                    <td>Mark</td>
-                    <td>Otto</td>
-                    <td>@mdo</td>
-                    <td>Mark</td>
-                    <td>Otto</td>
-                    <td class="text-center"><a href=""><i class="fas fa-pen"></i></a></td>
-                    <td class="text-center"><a href=""><i class="fas fa-trash-alt"></i></a></td>
+                    <th scope="row"><%= product.id %></th>
+                    <td><%= product.name %></td>
+                    <td><%= product.detail %></td>
+                    <td><%= product.price %></td>
+                    <td><%= product.in_stock %></td>
+                    <td><%= product.category %></td>
+                    <td class="text-center"><a href="/products/edit/<%= product.id %>"><i class="fas fa-pen"></i></a></td>
+                    <td class="text-center"><a href="/products/del/<%= product.id %>"><i class="fas fa-trash-alt"></i></a></td>
                 </tr>
+                <% } %> 
             </tbody>
         </table>
     </div>
       
-    <%- include('./parts/script') %> 
+    <%- include('./parts/script') %>
+    <script>
+        $('button.btn-dark').click(()=>{
+            location.href = "/products/add"
+        })
+    </script>
 <%- include('./parts/foot') %> 

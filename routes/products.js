@@ -3,15 +3,113 @@ const db = require('./../modules/db_connect');
 
 const router = express.Router();
 
+// list all products
 router.get('/', async (req, res)=>{
     const sql = "SELECT * FROM products";
 
-    [results] = await db.query(sql);
-    // console.log(results[0])
-    // res.send(results[0]);
-    // const [rs] = await db.query(`SELECT * FROM products`);
-    // res.json(rs);
-    res.render('home', results[0]);
+    [products] = await db.query(sql);
+
+    res.render('prod_list', products);
+});
+
+
+// add product
+router.get('/add', async ( req, res )=>{
+    res.render('prod_add');    
+});
+router.post('/add', async ( req, res )=>{
+    const sql = "INSERT INTO products (`name`, `detail`, `price`, `in_stock`, `category`) VALUES (?, ?, ?, ?, ?)";
+
+    const [results] = await db.query(sql, [
+        req.body.name,
+        req.body.detail,
+        req.body.price,
+        req.body.in_stock,
+        req.body.category
+    ])
+    console.log(results)
+});
+
+
+// edit product
+router.get('/edit/:id', async ( req, res )=>{
+    const id = parseInt(req.params.id);
+
+    const sql = "SELECT * FROM products WHERE id=?";
+    const [product] = await db.query(sql, [ id ]);
+    console.log(req.baseUrl)
+    if( !product.length ) {
+        return res.redirect(req.baseUrl)
+    }
+
+    product[0].referer = req.get('Referer') || '';
+    console.log(product[0]);
+
+    res.render('prod_edit', product[0]);
+});
+router.post('/edit/:id', async ( req, res ) => {
+    const output = {
+        success: false,
+        error: '',
+        code: 0,
+    };
+
+    const id = parseInt(req.params.id);
+    if( !id ) {
+        output.error = 'error-- id not found';
+        output.code = 410;
+        return res.json(output)
+    }
+    const sql = "SELECT * FROM products WHERE id=?";
+    const [product_check] = await db.query(sql, [ id ]);
+    console.log(req.baseUrl)
+    if( !product_check.length ) {
+        output.error = 'error-- id not found';
+        output.code = 420;
+        return res.json(output)
+    }
+
+    const sql_update = "UPDATE products SET ? WHERE id=?";
+    const [result] = await db.query(sql_update, [ req.body, id ]);
+
+    output.result = result;
+    
+    if( result.changedRows ){
+        output.success = true;
+    } else {
+        output.error = 'proudct is not updated, try again or click "Back" to back to product list'
+    }
+
+    res.json(output)
+
+});
+
+
+// delete product
+router.get('/del/:id', async ( req, res ) => {
+    const id = parseInt(req.params.id);
+
+    if( !id ) {
+        res.redirect(baseUrl)
+    }
+
+    const sql = "SELECT * FROM products WHERE id=?";
+    const [product_check] = await db.query(sql, [ id ]);
+
+    if( !product_check.length ) {
+        res.redirect(baseUrl)
+    }
+
+    const sql_del = "DELETE FROM products WHERE id=?";
+    const [result] = await db.query(sql_del, [ id ]);
+
+    const referer = req.get('Referer')
+
+    if ( result.affectedRows ) {
+        res.redirect(referer)
+    } else {
+        res.redirect(req.baseUrl)
+    }
 });
 
 module.exports = router;
