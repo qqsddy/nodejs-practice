@@ -4,24 +4,24 @@
         <div class="shadow p-5">
             <form name="form1" onsubmit="sendData(); return false">
                 <div class="mb-3 col-5">
-                  <label for="add_prod_name" class="form-label">Product Name</label>
-                  <input type="text" id="add_prod_name" name="name" value="<%= name %>" class="form-control"  >
+                  <label for="edit_prod_name" class="form-label">Product Name</label>
+                  <input type="text" id="edit_prod_name" name="name" value="<%= name %>" class="form-control"  >
                 </div>
                 <div class="mb-3">
-                  <label for="add_prod_detail" class="form-label">Product Detail</label>
-                  <textarea id="add_prod_name" name="detail" class="form-control" cols="30" rows="5"><%= detail %></textarea>
+                  <label for="edit_prod_detail" class="form-label">Product Detail</label>
+                  <textarea id="edit_prod_name" name="detail" class="form-control" cols="30" rows="5"><%= detail %></textarea>
                 </div>
                 <div class="mb-3 col-5">
-                    <label for="add_prod_price" class="form-label">Product Price</label>
-                    <input type="text" id="add_prod_price" name="price" value="<%= price %>" class="form-control"  >
+                    <label for="edit_prod_price" class="form-label">Product Price</label>
+                    <input type="number" id="edit_prod_price" name="price" value="<%= price %>" class="form-control"  >
                 </div>
                 <div class="mb-3 col-5">
-                    <label for="add_prod_in_stock" class="form-label">In Stock</label>
-                    <input type="number" id="add_prod_in_stock" value="<%= in_stock %>" name="in_stock" class="form-control"  >
+                    <label for="edit_prod_in_stock" class="form-label">In Stock</label>
+                    <input type="number" id="edit_prod_in_stock" value="<%= in_stock %>" name="in_stock" class="form-control"  >
                 </div>
                 <div class="mb-3 col-5">
-                    <label for="add_prod_category" class="form-label">Category</label>
-                    <select class="form-select" id="add_prod_category" name="category">
+                    <label for="edit_prod_category" class="form-label">Category</label>
+                    <select class="form-select" id="edit_prod_category" name="category">
                         <option selected>Open this select menu</option>
                         <option value="1">One</option>
                         <option value="2">Two</option>
@@ -29,8 +29,11 @@
                       </select>
                 </div>
                 <div class="mb-3 col-5">
-                    <label for="add_prod_img" class="form-label">Image</label>
-                    <input type="file" id="add_prod_img" name="img" class="form-control">
+                    <label for="edit_prod_img" class="form-label">Image</label>
+                    <input type="file" id="edit_prod_img" name="img" class="form-control">
+                </div>
+                <div class="mb-3">
+                    <img id="preview_img" style="width:100%;" src="/img/<%= img %>" alt="">
                 </div>
                 <button type="submit" class="btn btn-primary mt-3">Submit</button>
                 <button class="btn btn-secondary mt-3 ms-3">Back</button>
@@ -40,17 +43,43 @@
 
 <%- include('./parts/script') %>
 <script>
+    // var sendData = () => {
+    //     $.post('', $(document.form1).serialize(), (res)=>{
+    //         console.log(res)
+    //         if ( res.success ) {
+    //             alert('edit success')
+    //             location.href = '<%-// referer %>' || '/products';
+    //         } else {
+    //             alert( res.error );
+    //         }
+    //     }, 'json');
+    // }
+    
+    edit_prod_img.onchange = event => {
+        const [file] = edit_prod_img.files
+        if (file) {
+            preview_img.src = URL.createObjectURL(file)
+        }
+    }
+
     var sendData = () => {
-        $.post('', $(document.form1).serialize(), (res)=>{
-            console.log(res)
+        const fd = new FormData(document.form1);
+
+        fetch('', {
+            method: 'POST',
+            body: fd,
+        }).then( r =>
+            r.json()
+        ).then( res =>{
             if ( res.success ) {
                 alert('edit success')
                 location.href = '<%- referer %>' || '/products';
             } else {
                 alert( res.error );
             }
-        }, 'json');
+        })
     }
+
     $('button.btn-secondary').click(()=>{
         location.href = '/products';
     });
