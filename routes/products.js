@@ -1,4 +1,6 @@
 const express = require('express');
+const multer = require('multer')
+const upload = multer({ dest: '/public/img' })
 const db = require('./../modules/db_connect');
 
 const router = express.Router();
@@ -17,17 +19,29 @@ router.get('/', async (req, res)=>{
 router.get('/add', async ( req, res )=>{
     res.render('prod_add');    
 });
-router.post('/add', async ( req, res )=>{
-    const sql = "INSERT INTO products (`name`, `detail`, `price`, `in_stock`, `category`) VALUES (?, ?, ?, ?, ?)";
-
-    const [results] = await db.query(sql, [
+router.post('/add', upload.single('prod_img'),async ( req, res )=>{
+    const output = {
+        success: false,
+        error: ''
+    }
+    const sql = "INSERT INTO products (`name`, `detail`, `price`, `in_stock`, `category`, `img`) VALUES (?, ?, ?, ?, ?, ?)";
+    const [result] = await db.query(sql, [
         req.body.name,
         req.body.detail,
         req.body.price,
         req.body.in_stock,
-        req.body.category
+        req.body.category,
+        req.file.filename,
     ])
-    console.log(results)
+
+
+    if ( result.affectedRows ) {
+        output.success = true;
+        output.result = result;
+    } else {
+        output.error = 'add product fail';
+    }
+    res.json(output)
 });
 
 
